@@ -127,12 +127,12 @@
                 </div>
               </div><!-- End Info Item -->
 
-              <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d48389.78314118045!2d-74.006138!3d40.710059!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a22a3bda30d%3A0xb89d1fe6bc499443!2sDowntown%20Conference%20Center!5e0!3m2!1sen!2sus!4v1676961268712!5m2!1sen!2sus" frameborder="0" style="border:0; width: 100%; height: 270px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3641.372393144762!2d120.67275107590542!3d24.123556874347386!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x34693cfcecffe9d9%3A0xe28afadc0dad203a!2z5ZyL56uL5Lit6IiI5aSn5a24!5e0!3m2!1szh-TW!2stw!4v1779871648752!5m2!1szh-TW!2stw" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>" frameborder="0" style="border:0; width: 100%; height: 270px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
           </div>
 
           <div class="col-lg-7">
-            <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
+            <form id="google-contact-form" action="https://script.google.com/macros/s/AKfycbyyygCygibGvLJekQx0MISDdlss8__csEjBfza_Z9zLZINBKFXvDDsV-WjsW2J098W4wQ/exec" method="post" data-aos="fade-up" data-aos-delay="200">>
               <div class="row gy-4">
 
                 <div class="col-md-6">
@@ -157,8 +157,8 @@
 
                 <div class="col-md-12 text-center">
                   <div class="loading">Loading</div>
-                  <div class="error-message"></div>
-                  <div class="sent-message">Your message has been sent. Thank you!</div>
+                 <div class="error-message" style="display:none !important;"></div>
+                  <div class="sent-message">Your message has been sent. Thanks!</div>
 
                   <button type="submit">Send Message</button>
                 </div>
@@ -217,6 +217,49 @@
 
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
+<script>
+document.getElementById('google-contact-form').addEventListener('submit', function(e) {
+e.preventDefault(); // 阻止網頁跳轉
+var form = this;
+var loading = form.querySelector('.loading');
+var errorMessage = form.querySelector('.error-message');
+var sentMessage = form.querySelector('.sent-message');
+// 顯示 Loading，隱藏其他提示
+loading.style.display = 'block';
+errorMessage.style.display = 'none';
+sentMessage.style.display = 'none';
+// 封裝表單資料
+var formData = new FormData(form);
+var searchParams = new URLSearchParams();
+for (var pair of formData) {
+searchParams.append(pair[0], pair[1]);
+}
+// 用 fetch 發送 POST 請求到 Google GAS
+fetch(form.action, {
+method: 'POST',
+body: searchParams,
+headers: {
+'Content-Type': 'application/x-www-form-urlencoded'
+}
+})
+.then(response => response.text())
+.then(data => {
+loading.style.display = 'none';
+if (data === 'success') {
+sentMessage.style.display = 'block'; // 顯示成功畫面
+form.reset(); // 清空表單
+} else {
+errorMessage.textContent = '傳送失敗，請稍後再試。錯誤原因：' + data;
+errorMessage.style.display = 'block';
+}
+})
+.catch(error => {
+loading.style.display = 'none';
+errorMessage.textContent = '連線錯誤：' + error;
+errorMessage.style.display = 'block';
+});
+});
+
 
 </body>
 
